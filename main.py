@@ -1,6 +1,14 @@
 from utils import *
 
-def main(model_id, repository_id, metric, ds_path, load_data_only=True, pickle_path="pickle_data"):
+def main(model_id,
+        repository_id, 
+        metric, 
+        ds_path, 
+        load_data_only=True, 
+        pickle_path="pickle_data",
+        file_type="txt", 
+        ds_percentage=1,
+        train_test_split=0.20):
 
     # Load tokenizer of MT0-Small
     tokenizer = AutoTokenizer.from_pretrained(model_id)
@@ -20,7 +28,7 @@ def main(model_id, repository_id, metric, ds_path, load_data_only=True, pickle_p
 
         tokenized_dataset = load_data_pickle(f"{pickle_path}/tokenized_dataset")
     else:
-        dataset_dict = create_dataset(ds_path)
+        dataset_dict = create_dataset(ds_path, file_type=file_type, ds_percentage=ds_percentage)
         save_data_pickle(dataset_dict, f"{pickle_path}/dataset_dict")
 
         tokenized_inputs, max_source_length = tokenize_data(tokenizer, dataset_dict, tokenization_type="inputs")
@@ -55,5 +63,7 @@ if __name__ == "__main__":
     repository_id = f"mt0-small-query-extraction-v4"
     model_id = "bigscience/mt0-small"
     metric = evaluate.load("rouge")
-    ds_path = "datasets"
-    main(model_id, repository_id, metric, ds_path)
+    ds_path = "071624"
+    load_data_only = False
+    ds_percentage = 0.01
+    main(model_id, repository_id, metric, ds_path, load_data_only=load_data_only, ds_percentage=ds_percentage)
